@@ -36,22 +36,22 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler)
             )
             .authorizeHttpRequests(auth -> auth
-                // Hata ve Dokumantasyon uclari
+                // 1. Hata ve Dokümantasyon Uçları
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                
-                // Actuator uclari: Sadece health ve info serbest, kalan yonetim uclari ADMIN
+
+                // 2. Actuator Uçları (Health ve Info serbest, yönetim uçları ADMIN)
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers("/actuator/**").hasRole("ADMIN")
 
-                // RBAC Yetki Matrisi (HTTP Metot Bazli Ortak Kural)
+                // 3. RBAC Yetki Matrisi (HTTP Metot Bazlı)
                 .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("READONLY", "COMPANY", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/**").hasAnyRole("COMPANY", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasAnyRole("COMPANY", "ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/**").hasAnyRole("COMPANY", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
 
-                // Diger tum istekler kimlik dogrulamasi zorunlu
+                // 4. Diğer tüm istekler kimlik doğrulamasına tabi
                 .anyRequest().authenticated()
             )
             .httpBasic(basic -> basic.authenticationEntryPoint(authenticationEntryPoint));
