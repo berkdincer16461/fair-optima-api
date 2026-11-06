@@ -8,13 +8,13 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String name; // Örn: ROLE_ADMIN, ROLE_COMPANY, ROLE_READONLY
+    @Column(name = "name", nullable = false, unique = true, length = 50)
+    private String name;
 
-    public Role() {
-    }
+    public Role() {}
 
     public Role(String name) {
         this.name = name;

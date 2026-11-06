@@ -1,25 +1,25 @@
 package com.fairoptima.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "app_users")
+@Table(name = "users")
 public class AppUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "enabled", nullable = false)
     private boolean enabled = true;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -30,16 +30,7 @@ public class AppUser {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public AppUser() {
-    }
+    public AppUser() {}
 
     public AppUser(String username, String password, boolean enabled) {
         this.username = username;
@@ -85,9 +76,5 @@ public class AppUser {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 }
