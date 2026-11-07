@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").hasRole("ADMIN")
 
                 // 3. RBAC Yetki Matrisi (HTTP Metot Bazlı)
+                .requestMatchers(HttpMethod.POST, "/api/reservations/*/approve", "/api/reservations/*/reject").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("READONLY", "COMPANY", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/**").hasAnyRole("COMPANY", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasAnyRole("COMPANY", "ADMIN")

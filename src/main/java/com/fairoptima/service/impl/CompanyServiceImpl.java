@@ -4,8 +4,10 @@ import com.fairoptima.dto.CompanyPatchRequest;
 import com.fairoptima.dto.CompanyRequest;
 import com.fairoptima.dto.CompanyResponse;
 import com.fairoptima.entity.Company;
+import com.fairoptima.exception.BadRequestException;
 import com.fairoptima.exception.ResourceNotFoundException;
 import com.fairoptima.repository.CompanyRepository;
+import com.fairoptima.repository.ReservationRepository;
 import com.fairoptima.service.CompanyService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +18,12 @@ import java.util.List;
 public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final ReservationRepository reservationRepository; // Yeni eklendi
 
-    public CompanyServiceImpl(CompanyRepository companyRepository) {
+    // Constructor güncellendi
+    public CompanyServiceImpl(CompanyRepository companyRepository, ReservationRepository reservationRepository) {
         this.companyRepository = companyRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -67,7 +72,14 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     @Transactional
     public void delete(Long id) {
-        companyRepository.delete(findOrThrow(id));
+        Company company = findOrThrow(id);
+        
+        // İş Kuralı: Şirketin aktif rezervasyonu varsa silinmesini engelle
+        if (reservationRepository.countByCompanyId(id) > 0) {
+            throw new BadRequestException("Bu şirkete ait rezervasyonlar bulunduğu için şirket silinemez.");
+        }
+        
+        companyRepository.delete(company);
     }
 
     private Company findOrThrow(Long id) {
