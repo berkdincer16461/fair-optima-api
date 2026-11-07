@@ -11,6 +11,7 @@ import com.fairoptima.exception.ResourceNotFoundException;
 import com.fairoptima.repository.BoothRepository;
 import com.fairoptima.repository.BoothTypeRepository;
 import com.fairoptima.repository.HallRepository;
+import com.fairoptima.repository.ReservationRepository;
 import com.fairoptima.service.BoothService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +27,17 @@ public class BoothServiceImpl implements BoothService {
     private final BoothRepository boothRepository;
     private final HallRepository hallRepository;
     private final BoothTypeRepository boothTypeRepository;
+    private final ReservationRepository reservationRepository; // Adım 7: Yeni Eklendi
 
-    // Constructor Injection
+    // Constructor Injection güncellendi
     public BoothServiceImpl(BoothRepository boothRepository,
                             HallRepository hallRepository,
-                            BoothTypeRepository boothTypeRepository) {
+                            BoothTypeRepository boothTypeRepository,
+                            ReservationRepository reservationRepository) {
         this.boothRepository = boothRepository;
         this.hallRepository = hallRepository;
         this.boothTypeRepository = boothTypeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -164,6 +168,12 @@ public class BoothServiceImpl implements BoothService {
     public void delete(Long id) {
         Booth booth = boothRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Stant bulunamadi. ID: " + id));
+                
+        // Adım 7: Stantın aktif rezervasyonu varsa silinmesini engelle
+        if (reservationRepository.countByBoothId(id) > 0) {
+            throw new BadRequestException("Bu stanta ait aktif rezervasyonlar bulunduğu için stant silinemez.");
+        }
+        
         boothRepository.delete(booth);
     }
 
