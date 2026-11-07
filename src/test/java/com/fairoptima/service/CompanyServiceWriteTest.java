@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
+import com.fairoptima.repository.ReservationRepository;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,7 +28,8 @@ class CompanyServiceWriteTest {
 
     @Mock
     private CompanyRepository companyRepository;
-
+    @Mock
+    private ReservationRepository reservationRepository;
     @InjectMocks
     private CompanyServiceImpl companyService;
 
