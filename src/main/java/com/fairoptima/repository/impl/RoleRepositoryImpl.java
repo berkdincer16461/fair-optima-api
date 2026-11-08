@@ -4,7 +4,8 @@ import com.fairoptima.entity.Role;
 import com.fairoptima.repository.RoleRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.EntityManagerFactory;
+import org.springframework.orm.jpa.SharedEntityManagerCreator;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,8 +13,11 @@ import java.util.Optional;
 @Repository
 public class RoleRepositoryImpl implements RoleRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public RoleRepositoryImpl(EntityManagerFactory emf) {
+        this.entityManager = SharedEntityManagerCreator.createSharedEntityManager(emf);
+    }
 
     @Override
     public Role save(Role role) {
