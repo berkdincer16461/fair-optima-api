@@ -208,6 +208,8 @@ Uygulama temel olarak şu kaynakları sunar. Tüm uçların parametre, istek ve 
 | `/api/companies` | Şirket yönetimi (CRUD, `?sector=` ile sektöre göre filtreleme) |
 | `/api/fairs` | Fuar etkinlikleri yönetimi |
 | `/api/halls` | Fuarlara bağlı salonların yönetimi |
+| `/api/booth-types` | Stant tiplerinin yönetimi |
+| `/api/fairs/{fairId}/booths/available` | Fuardaki müsait stantlar |
 | `/api/booths` | Salonlardaki stantların yönetimi (durum yönetimi ve çakışma kontrolleri) |
 | `/api/reservations` | Şirketlerin stant rezervasyonları; onay/ret (`POST /{id}/approve`, `/{id}/reject`, yalnızca ADMIN) ve iptal (`POST /{id}/cancel`) |
 | `/api/pricing/quote` | Stant fiyat teklifi (`?basePrice=&days=&plan=standard\|early`). `@Primary` / `@Qualifier` ile seçilen iki fiyatlama gerçekleştirimi |
