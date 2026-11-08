@@ -7,7 +7,6 @@ import com.fairoptima.entity.BoothType;
 import com.fairoptima.entity.Hall;
 import com.fairoptima.entity.enums.BoothStatus;
 import com.fairoptima.exception.BadRequestException;
-import com.fairoptima.exception.ResourceNotFoundException;
 import com.fairoptima.repository.BoothRepository;
 import com.fairoptima.repository.BoothTypeRepository;
 import com.fairoptima.repository.HallRepository;
