@@ -1,15 +1,58 @@
 {
   "info": {
-    "name": "FairOptima - Reservation",
-    "description": "Reservation modulu istekleri. Endpoint'ler hazir olmadan calistirmayin. boothId, startDate, endDate degiskenlerini Fair/Hall/Booth kayitlarina gore ayarlayin. Collection Runner ile sirayla calistirin.",
+    "name": "FairOptima REST API",
+    "description": "Tum modullerin istekleri. Bos bir veritabaniyla uygulama calisirken Collection Runner ile 1'den 8'e sirayla calistirin. 5. klasor fuar, salon, stant tipi ve stant olusturur ve id'lerini degiskenlere yazar, 6-7. klasorler bunlari kullanir, 8. klasor hepsini siler.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "5 - Reservation akisi",
+      "name": "1 - Company CRUD (admin)",
       "item": [
         {
-          "name": "01 Hazirlik: sirket olustur (admin)",
+          "name": "Listele (GET)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Olustur (POST)",
           "event": [
             {
               "listen": "test",
@@ -17,7 +60,11 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Durum kodu 201\", function () { pm.response.to.have.status(201); });",
-                  "pm.collectionVariables.set(\"resCompanyId\", pm.response.json().id);"
+                  "pm.test(\"companyId degiskene kaydedildi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"companyId\", j.id);",
+                  "});"
                 ]
               }
             }
@@ -57,7 +104,3602 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Rezervasyon Test A.S.\",\n  \"sector\": \"Yazilim\",\n  \"contactEmail\": \"rez@test.com\"\n}",
+              "raw": "{\n  \"name\": \"Teknoloji A.S.\",\n  \"sector\": \"Yazilim\",\n  \"contactEmail\": \"info@teknoloji.com\",\n  \"website\": \"https://teknoloji.com\",\n  \"description\": \"Yazilim ve bulut cozumleri\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Kimlikle getir (GET by id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/{{companyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "{{companyId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sektore gore filtrele (GET ?sector=)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies?sector=Yazilim",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ],
+              "query": [
+                {
+                  "key": "sector",
+                  "value": "Yazilim"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Tam guncelle (PUT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/{{companyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "{{companyId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Teknoloji A.S. (Guncel)\",\n  \"sector\": \"Bilisim\",\n  \"contactEmail\": \"iletisim@teknoloji.com\",\n  \"website\": \"https://teknoloji.com\",\n  \"description\": \"Tam guncelleme ile degisti\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Kismi guncelle (PATCH)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Sadece sector degisti, diger alanlar korundu\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.sector).to.eql(\"Yapay Zeka\");",
+                  "    pm.expect(j.name).to.eql(\"Teknoloji A.S. (Guncel)\");",
+                  "    pm.expect(j.contactEmail).to.eql(\"iletisim@teknoloji.com\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/{{companyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "{{companyId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sector\": \"Yapay Zeka\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Sil (DELETE)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 204\", function () { pm.response.to.have.status(204); });",
+                  "pm.collectionVariables.set(\"deletedCompanyId\", pm.collectionVariables.get(\"companyId\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/{{companyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "{{companyId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Rol bazli yetki (company / reader)",
+      "item": [
+        {
+          "name": "COMPANY ile olustur (POST) - 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"companyId degiskene kaydedildi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"companyId\", j.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Teknoloji A.S.\",\n  \"sector\": \"Yazilim\",\n  \"contactEmail\": \"info@teknoloji.com\",\n  \"website\": \"https://teknoloji.com\",\n  \"description\": \"Yazilim ve bulut cozumleri\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "COMPANY ile PATCH - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/{{companyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "{{companyId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sector\": \"Yapay Zeka\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "READER ile listele (GET) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST'ta gonderilen id yok sayilir (id=999)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Istemcinin gonderdigi id yok sayildi\", function () { pm.expect(pm.response.json().id).to.not.eql(999); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 999,\n  \"name\": \"Id Denemesi\",\n  \"sector\": \"Test\",\n  \"contactEmail\": \"test@test.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Company hata senaryolari (400, 401, 403, 404)",
+      "item": [
+        {
+          "name": "400 - Bos govde",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "400 - Gecersiz e-posta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"X\",\n  \"sector\": \"Y\",\n  \"contactEmail\": \"gecersiz\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "400 - Bozuk JSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{ bozuk json",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "400 - Gecersiz id tipi (abc)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "abc"
+              ]
+            }
+          }
+        },
+        {
+          "name": "404 - Olmayan kayit (GET 9999)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(404);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "9999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "404 - Olmayan kayit (PUT 9999)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(404);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "9999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Teknoloji A.S.\",\n  \"sector\": \"Yazilim\",\n  \"contactEmail\": \"info@teknoloji.com\",\n  \"website\": \"https://teknoloji.com\",\n  \"description\": \"Yazilim ve bulut cozumleri\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "404 - Silinmis kayit (GET)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(404);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/{{deletedCompanyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "{{deletedCompanyId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "401 - Kimlik bilgisi yok",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(401);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            }
+          }
+        },
+        {
+          "name": "401 - Yanlis parola",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(401);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{wrongPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            }
+          }
+        },
+        {
+          "name": "401 - Pasif kullanici",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(401);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{passiveUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{passivePass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            }
+          }
+        },
+        {
+          "name": "403 - READER ile POST",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(403);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Teknoloji A.S.\",\n  \"sector\": \"Yazilim\",\n  \"contactEmail\": \"info@teknoloji.com\",\n  \"website\": \"https://teknoloji.com\",\n  \"description\": \"Yazilim ve bulut cozumleri\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "403 - READER ile PATCH",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(403);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sector\": \"Yapay Zeka\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "403 - COMPANY ile DELETE",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(403);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - Actuator ve sistem",
+      "item": [
+        {
+          "name": "Health (kimliksiz) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Info (kimliksiz) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actuator/info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "info"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Metrics (kimliksiz) - 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(401);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actuator/metrics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "metrics"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Metrics (COMPANY) - 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(403);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actuator/metrics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "metrics"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Metrics (ADMIN) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/actuator/metrics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "metrics"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sistem bilgisi (@Lazy bean) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/system/info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "system",
+                "info"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fiyat teklifi (@Primary, standard) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Toplam 3000\", function () { pm.expect(pm.response.json().total).to.eql(3000); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pricing/quote?basePrice=1000&days=3&plan=standard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pricing",
+                "quote"
+              ],
+              "query": [
+                {
+                  "key": "basePrice",
+                  "value": "1000"
+                },
+                {
+                  "key": "days",
+                  "value": "3"
+                },
+                {
+                  "key": "plan",
+                  "value": "standard"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fiyat teklifi (@Qualifier, early) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Toplam 2700\", function () { pm.expect(pm.response.json().total).to.eql(2700); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pricing/quote?basePrice=1000&days=3&plan=early",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pricing",
+                "quote"
+              ],
+              "query": [
+                {
+                  "key": "basePrice",
+                  "value": "1000"
+                },
+                {
+                  "key": "days",
+                  "value": "3"
+                },
+                {
+                  "key": "plan",
+                  "value": "early"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fiyat teklifi gecersiz plan - 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pricing/quote?plan=hatali",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pricing",
+                "quote"
+              ],
+              "query": [
+                {
+                  "key": "plan",
+                  "value": "hatali"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 - Fuar, Salon, Stant tipi ve Stant (CRUD ve kurallar)",
+      "item": [
+        {
+          "name": "Fuar olustur (POST) - 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"fairId degiskene kaydedildi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"fairId\", j.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kariyer Fuari 2026\",\n  \"theme\": \"Teknoloji\",\n  \"location\": \"Trabzon\",\n  \"startDate\": \"2026-11-30\",\n  \"endDate\": \"2026-12-10\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Fuar listele (GET) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuar getir (GET by id) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs/{{fairId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs",
+                "{{fairId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuar durum filtresi (?status=ACTIVE) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs?status=ACTIVE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "ACTIVE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuar tam guncelle (PUT) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs/{{fairId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs",
+                "{{fairId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kariyer Fuari 2026 (Guncel)\",\n  \"theme\": \"Teknoloji ve Yazilim\",\n  \"location\": \"Trabzon\",\n  \"startDate\": \"2026-11-30\",\n  \"endDate\": \"2026-12-10\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Fuar kismi guncelle (PATCH) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"theme degisti\", function () { pm.expect(pm.response.json().theme).to.eql(\"Yapay Zeka\"); });",
+                  "pm.test(\"name korundu\", function () { pm.expect(pm.response.json().name).to.eql(\"Kariyer Fuari 2026 (Guncel)\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs/{{fairId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs",
+                "{{fairId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"Yapay Zeka\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Fuar 400 - bitis baslangictan once",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kariyer Fuari 2026\",\n  \"theme\": \"Teknoloji\",\n  \"location\": \"Trabzon\",\n  \"startDate\": \"2026-12-10\",\n  \"endDate\": \"2026-12-01\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Fuar 404 - olmayan kayit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(404);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuar 403 - READER ile POST",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(403);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kariyer Fuari 2026\",\n  \"theme\": \"Teknoloji\",\n  \"location\": \"Trabzon\",\n  \"startDate\": \"2026-11-30\",\n  \"endDate\": \"2026-12-10\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Salon olustur (POST) - 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"hallId degiskene kaydedildi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"hallId\", j.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Salon A\",\n  \"areaSquareMeters\": 500,\n  \"maxPowerKw\": 100,\n  \"maxNetworkPorts\": 50,\n  \"fairId\": {{fairId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Salon listele (?fairId=) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls?fairId={{fairId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls"
+              ],
+              "query": [
+                {
+                  "key": "fairId",
+                  "value": "{{fairId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Salon getir (GET by id) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls/{{hallId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls",
+                "{{hallId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Salon tam guncelle (PUT) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls/{{hallId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls",
+                "{{hallId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Salon A (Guncel)\",\n  \"areaSquareMeters\": 600,\n  \"maxPowerKw\": 100,\n  \"maxNetworkPorts\": 50,\n  \"fairId\": {{fairId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Salon kismi guncelle (PATCH) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"maxPowerKw degisti\", function () { pm.expect(pm.response.json().maxPowerKw).to.eql(120); });",
+                  "pm.test(\"name korundu\", function () { pm.expect(pm.response.json().name).to.eql(\"Salon A (Guncel)\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls/{{hallId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls",
+                "{{hallId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxPowerKw\": 120\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Salon 404 - olmayan fuar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(404);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Salon A\",\n  \"areaSquareMeters\": 500,\n  \"maxPowerKw\": 100,\n  \"maxNetworkPorts\": 50,\n  \"fairId\": 999999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Salon 400 - eksik alanlar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant tipi olustur (POST) - 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"boothTypeId degiskene kaydedildi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"boothTypeId\", j.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booth-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booth-types"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Standart\",\n  \"priceMultiplier\": 1.0,\n  \"defaultPowerKw\": 3,\n  \"defaultNetworkPorts\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant tipi listele - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booth-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booth-types"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stant tipi getir - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booth-types/{{boothTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booth-types",
+                "{{boothTypeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stant tipi 400 - ayni ad",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booth-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booth-types"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Standart\",\n  \"priceMultiplier\": 1.0,\n  \"defaultPowerKw\": 3,\n  \"defaultNetworkPorts\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant tipi tam guncelle (PUT) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booth-types/{{boothTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booth-types",
+                "{{boothTypeId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Standart Plus\",\n  \"priceMultiplier\": 1.2,\n  \"defaultPowerKw\": 4,\n  \"defaultNetworkPorts\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant tipi kismi guncelle (PATCH) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"priceMultiplier degisti\", function () { pm.expect(pm.response.json().priceMultiplier).to.eql(1.5); });",
+                  "pm.test(\"name korundu\", function () { pm.expect(pm.response.json().name).to.eql(\"Standart Plus\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booth-types/{{boothTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booth-types",
+                "{{boothTypeId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"priceMultiplier\": 1.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant olustur (POST) - 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"boothId degiskene kaydedildi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"boothId\", j.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boothCode\": \"A-101\",\n  \"areaSquareMeters\": 12,\n  \"basePrice\": 1000,\n  \"requiredPowerKw\": 3,\n  \"networkPorts\": 2,\n  \"hallId\": {{hallId}},\n  \"boothTypeId\": {{boothTypeId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant listele - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stant getir (GET by id) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths/{{boothId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths",
+                "{{boothId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stant 400 - ayni stant kodu",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boothCode\": \"A-101\",\n  \"areaSquareMeters\": 12,\n  \"basePrice\": 1000,\n  \"requiredPowerKw\": 3,\n  \"networkPorts\": 2,\n  \"hallId\": {{hallId}},\n  \"boothTypeId\": {{boothTypeId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant 404 - olmayan salon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(404);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boothCode\": \"Z-999\",\n  \"areaSquareMeters\": 12,\n  \"basePrice\": 1000,\n  \"requiredPowerKw\": 3,\n  \"networkPorts\": 2,\n  \"hallId\": 999999,\n  \"boothTypeId\": {{boothTypeId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant tam guncelle (PUT) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths/{{boothId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths",
+                "{{boothId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boothCode\": \"A-101\",\n  \"areaSquareMeters\": 15,\n  \"basePrice\": 1200,\n  \"requiredPowerKw\": 3,\n  \"networkPorts\": 2,\n  \"hallId\": {{hallId}},\n  \"boothTypeId\": {{boothTypeId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant kismi guncelle (PATCH) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"basePrice degisti\", function () { pm.expect(pm.response.json().basePrice).to.eql(1500); });",
+                  "pm.test(\"boothCode korundu\", function () { pm.expect(pm.response.json().boothCode).to.eql(\"A-101\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths/{{boothId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths",
+                "{{boothId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"basePrice\": 1500\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Stant PATCH 400 - gecersiz deger",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths/{{boothId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths",
+                "{{boothId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"areaSquareMeters\": \"abc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Musait stantlar (fuara gore) - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Olusturulan stant listede\", function () { pm.expect(pm.response.json().map(function (b) { return b.id; })).to.include(Number(pm.collectionVariables.get(\"boothId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{readerUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{readerPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs/{{fairId}}/booths/available",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs",
+                "{{fairId}}",
+                "booths",
+                "available"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Silme kisiti: stanti olan salon silinemez - 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls/{{hallId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls",
+                "{{hallId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Silme kisiti: stanti olan stant tipi silinemez - 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booth-types/{{boothTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booth-types",
+                "{{boothTypeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Silme kisiti: salonu olan fuar silinemez - 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs/{{fairId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs",
+                "{{fairId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 - Reservation akisi",
+      "item": [
+        {
+          "name": "01 Hazirlik: sirket olustur (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"resCompanyId degiskene kaydedildi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.id).to.be.a(\"number\");",
+                  "    pm.collectionVariables.set(\"resCompanyId\", j.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Teknoloji A.S.\",\n  \"sector\": \"Yazilim\",\n  \"contactEmail\": \"info@teknoloji.com\",\n  \"website\": \"https://teknoloji.com\",\n  \"description\": \"Yazilim ve bulut cozumleri\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -169,56 +3811,7 @@
           }
         },
         {
-          "name": "04 Sirkete gore filtrele (?companyId=)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "auth": {
-              "type": "basic",
-              "basic": [
-                {
-                  "key": "username",
-                  "value": "{{readerUser}}",
-                  "type": "string"
-                },
-                {
-                  "key": "password",
-                  "value": "{{readerPass}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/reservations?companyId={{resCompanyId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "reservations"
-              ],
-              "query": [
-                {
-                  "key": "companyId",
-                  "value": "{{resCompanyId}}"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "05 Kimlikle getir - 200",
+          "name": "04 Kimlikle getir - 200",
           "event": [
             {
               "listen": "test",
@@ -262,7 +3855,7 @@
           }
         },
         {
-          "name": "06 Tam guncelle (PUT) - 200",
+          "name": "05 Tam guncelle (PUT) - 200",
           "event": [
             {
               "listen": "test",
@@ -320,7 +3913,7 @@
           }
         },
         {
-          "name": "07 Kismi guncelle (PATCH) - 200",
+          "name": "06 Kismi guncelle (PATCH) - 200",
           "event": [
             {
               "listen": "test",
@@ -384,7 +3977,7 @@
           }
         },
         {
-          "name": "08 Onay (company) - 403",
+          "name": "07 Onay (company) - 403",
           "event": [
             {
               "listen": "test",
@@ -436,7 +4029,7 @@
           }
         },
         {
-          "name": "09 Onay (admin) - 200, APPROVED",
+          "name": "08 Onay (admin) - 200, APPROVED",
           "event": [
             {
               "listen": "test",
@@ -444,7 +4037,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
-                  "pm.test(\"Rezervasyon durumu APPROVED\", function () { pm.expect(pm.response.json().status).to.eql(\"APPROVED\"); });"
+                  "pm.test(\"Durum APPROVED\", function () { pm.expect(pm.response.json().status).to.eql(\"APPROVED\"); });"
                 ]
               }
             }
@@ -482,7 +4075,7 @@
           }
         },
         {
-          "name": "10 Tekrar onay (zaten APPROVED) - 400",
+          "name": "09 Tekrar onay (zaten APPROVED) - 400",
           "event": [
             {
               "listen": "test",
@@ -534,7 +4127,7 @@
           }
         },
         {
-          "name": "11 Ayni stant ve tarih cakismasi - 400",
+          "name": "10 Ayni stant ve tarih cakismasi - 400",
           "event": [
             {
               "listen": "test",
@@ -598,7 +4191,7 @@
           }
         },
         {
-          "name": "12 Kapasite asimi (cok yuksek guc) - 400",
+          "name": "11 Kapasite asimi (cok yuksek guc) - 400",
           "event": [
             {
               "listen": "test",
@@ -662,7 +4255,7 @@
           }
         },
         {
-          "name": "13 Iptal (company) - 200, CANCELLED",
+          "name": "12 Iptal (company) - 200, CANCELLED",
           "event": [
             {
               "listen": "test",
@@ -670,7 +4263,59 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
-                  "pm.test(\"Rezervasyon durumu CANCELLED\", function () { pm.expect(pm.response.json().status).to.eql(\"CANCELLED\"); });"
+                  "pm.test(\"Durum CANCELLED\", function () { pm.expect(pm.response.json().status).to.eql(\"CANCELLED\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations/{{reservationId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservations",
+                "{{reservationId}}",
+                "cancel"
+              ]
+            }
+          }
+        },
+        {
+          "name": "13 Tekrar iptal (zaten CANCELLED) - 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
                 ]
               }
             }
@@ -774,7 +4419,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Durum kodu 200\", function () { pm.response.to.have.status(200); });",
-                  "pm.test(\"Rezervasyon durumu REJECTED\", function () { pm.expect(pm.response.json().status).to.eql(\"REJECTED\"); });"
+                  "pm.test(\"Durum REJECTED\", function () { pm.expect(pm.response.json().status).to.eql(\"REJECTED\"); });"
                 ]
               }
             }
@@ -871,7 +4516,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Durum kodu 204\", function () { pm.response.to.have.status(204); });",
-                  "pm.collectionVariables.set(\"deletedId\", pm.collectionVariables.get(\"reservationId\"));"
+                  "pm.collectionVariables.set(\"deletedReservationId\", pm.collectionVariables.get(\"reservationId\"));"
                 ]
               }
             }
@@ -990,14 +4635,14 @@
               ]
             },
             "url": {
-              "raw": "{{baseUrl}}/api/reservations/{{deletedId}}",
+              "raw": "{{baseUrl}}/api/reservations/{{deletedReservationId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "reservations",
-                "{{deletedId}}"
+                "{{deletedReservationId}}"
               ]
             }
           }
@@ -1005,7 +4650,7 @@
       ]
     },
     {
-      "name": "6 - Reservation hata senaryolari",
+      "name": "7 - Reservation hata senaryolari",
       "item": [
         {
           "name": "20 Bos govde - 400",
@@ -1126,7 +4771,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"boothId\": {{boothId}},\n  \"companyId\": {{resCompanyId}},\n  \"startDate\": \"2026-12-10\",\n  \"endDate\": \"2026-12-01\",\n  \"requestedPowerKw\": 2.5,\n  \"requestedNetworkPorts\": 2\n}",
+              "raw": "{\n  \"boothId\": {{boothId}},\n  \"companyId\": {{resCompanyId}},\n  \"startDate\": \"2026-12-05\",\n  \"endDate\": \"2026-12-01\",\n  \"requestedPowerKw\": 2.5,\n  \"requestedNetworkPorts\": 2\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1136,7 +4781,71 @@
           }
         },
         {
-          "name": "22 Gecersiz id tipi (abc) - 400",
+          "name": "22 Fuar tarihleri disinda - 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"ErrorResponse JSON govdesi\", function () {",
+                  "    const j = pm.response.json();",
+                  "    pm.expect(j.status).to.eql(400);",
+                  "    pm.expect(j).to.have.property(\"error\");",
+                  "    pm.expect(j).to.have.property(\"message\");",
+                  "    pm.expect(j).to.have.property(\"timestamp\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{companyUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{companyPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservations"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boothId\": {{boothId}},\n  \"companyId\": {{resCompanyId}},\n  \"startDate\": \"2027-03-01\",\n  \"endDate\": \"2027-03-02\",\n  \"requestedPowerKw\": 2.5,\n  \"requestedNetworkPorts\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "23 Gecersiz id tipi (abc) - 400",
           "event": [
             {
               "listen": "test",
@@ -1187,7 +4896,7 @@
           }
         },
         {
-          "name": "23 Olmayan stant - 404",
+          "name": "24 Olmayan stant - 404",
           "event": [
             {
               "listen": "test",
@@ -1251,7 +4960,7 @@
           }
         },
         {
-          "name": "24 Olmayan sirket - 404",
+          "name": "25 Olmayan sirket - 404",
           "event": [
             {
               "listen": "test",
@@ -1315,7 +5024,7 @@
           }
         },
         {
-          "name": "25 Olmayan rezervasyon (GET) - 404",
+          "name": "26 Olmayan rezervasyon (GET) - 404",
           "event": [
             {
               "listen": "test",
@@ -1366,7 +5075,7 @@
           }
         },
         {
-          "name": "26 Olmayan rezervasyon (onay) - 404",
+          "name": "27 Olmayan rezervasyon (onay) - 404",
           "event": [
             {
               "listen": "test",
@@ -1418,7 +5127,7 @@
           }
         },
         {
-          "name": "27 Kimlik bilgisi yok - 401",
+          "name": "28 Kimlik bilgisi yok - 401",
           "event": [
             {
               "listen": "test",
@@ -1456,7 +5165,7 @@
           }
         },
         {
-          "name": "28 READER ile POST - 403",
+          "name": "29 READER ile POST - 403",
           "event": [
             {
               "listen": "test",
@@ -1520,6 +5229,231 @@
           }
         }
       ]
+    },
+    {
+      "name": "8 - Temizlik (kaynaklari siler, koleksiyon tekrar calistirilabilir)",
+      "item": [
+        {
+          "name": "Stant sil - 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booths/{{boothId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booths",
+                "{{boothId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Salon sil - 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/halls/{{hallId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "halls",
+                "{{hallId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stant tipi sil - 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/booth-types/{{boothTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "booth-types",
+                "{{boothTypeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fuar sil - 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fairs/{{fairId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fairs",
+                "{{fairId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Rezervasyon sirketini sil - 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Durum kodu 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{adminUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPass}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/companies/{{resCompanyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "companies",
+                "{{resCompanyId}}"
+              ]
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [
@@ -1552,16 +5486,40 @@
       "value": "reader123"
     },
     {
-      "key": "boothId",
+      "key": "passiveUser",
+      "value": "passive"
+    },
+    {
+      "key": "passivePass",
+      "value": "passive123"
+    },
+    {
+      "key": "wrongPass",
+      "value": "yanlis-parola"
+    },
+    {
+      "key": "companyId",
       "value": "1"
     },
     {
-      "key": "startDate",
-      "value": "2026-12-01"
+      "key": "deletedCompanyId",
+      "value": "99998"
     },
     {
-      "key": "endDate",
-      "value": "2026-12-03"
+      "key": "fairId",
+      "value": "1"
+    },
+    {
+      "key": "hallId",
+      "value": "1"
+    },
+    {
+      "key": "boothTypeId",
+      "value": "1"
+    },
+    {
+      "key": "boothId",
+      "value": "1"
     },
     {
       "key": "resCompanyId",
@@ -1576,8 +5534,16 @@
       "value": "1"
     },
     {
-      "key": "deletedId",
+      "key": "deletedReservationId",
       "value": "99998"
+    },
+    {
+      "key": "startDate",
+      "value": "2026-12-01"
+    },
+    {
+      "key": "endDate",
+      "value": "2026-12-03"
     }
   ]
 }

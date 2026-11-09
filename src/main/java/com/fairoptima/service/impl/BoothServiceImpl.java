@@ -129,6 +129,7 @@ public class BoothServiceImpl implements BoothService {
         Booth existing = boothRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Stant bulunamadi. ID: " + id));
 
+        try {
         updates.forEach((key, value) -> {
             if (value == null || "id".equalsIgnoreCase(key)) {
                 return; // ID degistirilemez, null alanlar atlanir
@@ -158,6 +159,9 @@ public class BoothServiceImpl implements BoothService {
                 }
             }
         });
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Gecersiz alan degeri: " + e.getMessage());
+        }
 
         Booth updated = boothRepository.update(existing);
         return toResponse(updated);

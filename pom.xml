@@ -11,8 +11,8 @@
 	<groupId>com.fairoptima</groupId>
 	<artifactId>fair-optima-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>fair-optima-api</name>
+	<description>FairOptima REST API - Kariyer Fuari Stant ve Kaynak Optimizasyon Sistemi</description>
 	<url/>
 	<licenses>
 		<license/>

@@ -157,24 +157,32 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public ReservationResponse reject(Long id) {
-        return changeStatusAndFreeBooth(id, ReservationStatus.REJECTED);
+        Reservation r = findReservationOrThrow(id);
+        if (r.getStatus() != ReservationStatus.PENDING) {
+            throw new BadRequestException("Only PENDING reservations can be rejected.");
+        }
+        r.setStatus(ReservationStatus.REJECTED);
+        reservationRepository.update(r);
+        return mapToResponse(r);
     }
 
     @Override
     @Transactional
     public ReservationResponse cancel(Long id) {
-        return changeStatusAndFreeBooth(id, ReservationStatus.CANCELLED);
-    }
-
-    private ReservationResponse changeStatusAndFreeBooth(Long id, ReservationStatus newStatus) {
         Reservation r = findReservationOrThrow(id);
-        r.setStatus(newStatus);
+        ReservationStatus previous = r.getStatus();
+        if (previous != ReservationStatus.PENDING && previous != ReservationStatus.APPROVED) {
+            throw new BadRequestException("Only PENDING or APPROVED reservations can be cancelled.");
+        }
+        r.setStatus(ReservationStatus.CANCELLED);
         reservationRepository.update(r);
 
-        Booth booth = r.getBooth();
-        if (booth.getStatus() == BoothStatus.RESERVED) {
-            booth.setStatus(BoothStatus.AVAILABLE);
-            boothRepository.update(booth);
+        if (previous == ReservationStatus.APPROVED) {
+            Booth booth = r.getBooth();
+            if (booth.getStatus() == BoothStatus.RESERVED) {
+                booth.setStatus(BoothStatus.AVAILABLE);
+                boothRepository.update(booth);
+            }
         }
         return mapToResponse(r);
     }

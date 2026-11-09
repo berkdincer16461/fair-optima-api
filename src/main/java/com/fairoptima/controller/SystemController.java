@@ -21,7 +21,7 @@ public class SystemController {
     }
 
     @GetMapping("/info")
-public ResponseEntity<Map<String, Object>> getSystemInfo() {
-    return ResponseEntity.ok(Map.of("systemInfo", appLifecycleService.getSystemInfo()));
-}
+    public ResponseEntity<Map<String, Object>> getSystemInfo() {
+        return ResponseEntity.ok(Map.of("systemInfo", appLifecycleService.getSystemInfo()));
+    }
 }

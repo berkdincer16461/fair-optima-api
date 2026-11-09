@@ -176,7 +176,7 @@ Değerlendirmede kullanılabilecek kullanıcılar uygulama ilk açıldığında 
 | `admin` | `admin123` | `ROLE_ADMIN` | Aktif | Okuma, ekleme/güncelleme, silme, tüm Actuator uçları |
 | `company` | `company123` | `ROLE_COMPANY` | Aktif | Okuma, ekleme/güncelleme (PATCH dahil) |
 | `reader` | `reader123` | `ROLE_READONLY` | Aktif | Yalnızca okuma (GET) |
-| `passive` | `passive123` | `ROLE_READONLY` | **Pasif** | Giriş reddedilir (401) |
+| `passive` | `passive123` | `ROLE_COMPANY` | **Pasif** | Giriş reddedilir (401) |
 
 ---
 
@@ -195,7 +195,7 @@ Yetkilendirme HTTP metodu ve yol üzerinden uygulanır. Kimlik doğrulaması yok
 | `GET /actuator/metrics` | ❌ 403 | ❌ 403 | ✅ |
 | `GET /actuator/health`, `/actuator/info` | Açık | Açık | Açık |
 
-> Bazı spesifik kurallar servis katmanında da denetlenir. Örneğin şirketler onaylanmış aktif rezervasyonları varken silinemez, stantlar rezerve edilmişse silinemez.
+> Bazı iş kuralları servis katmanında denetlenir ve ihlalde **400** döner: rezervasyonu olan şirket veya stant silinemez, salonu olan fuar silinemez, stantı olan salon veya stant tipi silinemez, aynı stant kodu veya stant tipi adı ikinci kez kullanılamaz, çakışan rezervasyon ile salon elektrik/ağ portu kapasitesi aşımı reddedilir.
 
 ---
 
@@ -254,11 +254,12 @@ Tüm hatalar ortak bir JSON modeliyle döner. HTTP durum kodu ile gövdedeki `st
 
 ## Postman Koleksiyonu
 
-`FairOptima.postman_collection.json` dosyasını Postman'de **Import** ile içe aktarın.
+`FairOptima.postman_collection.json` dosyasını Postman'de **Import** ile içe aktarın. Tek koleksiyon tüm modülleri kapsar (101 istek, 8 klasör).
 
 - **Base URL ve kimlik bilgileri koleksiyon değişkenleridir:** `baseUrl`, `adminUser`/`adminPass`, `companyUser`/`companyPass`, `readerUser`/`readerPass`, `passiveUser`/`passivePass`. Farklı bir adres veya parola kullanıyorsanız yalnızca bu değişkenleri güncelleyin.
-- Koleksiyon **Collection Runner** ile baştan sona sırayla çalıştırılmalıdır (bazı istekler öncekilerin ürettiği ID'yi `{{companyId}}`, `{{boothId}}` gibi değişkenlerle kullanır).
-- İçerik: listeleme, tek kayıt okuma, ekleme, tam güncelleme, kısmi güncelleme, silme işlemleri; stant ve rezervasyon ilişkileri; 400, 404, 401, 403 durum kodlarına yönelik negatif test senaryoları ve Actuator istekleri.
+- **Boş bir veritabanıyla ve uygulama çalışırken**, **Collection Runner** ile 1'den 8'e sırayla çalıştırın. Bazı istekler öncekilerin ürettiği `id`'leri (`companyId`, `fairId`, `hallId`, `boothTypeId`, `boothId`, `reservationId`) değişkenler aracılığıyla kullanır.
+- Klasörler: 1) Company CRUD, 2) rol bazlı yetki, 3) Company hata senaryoları (400, 401, 403, 404), 4) Actuator, sistem ve fiyat teklifi, 5) fuar, salon, stant tipi ve stant (CRUD, PATCH, iş kuralları, silme kısıtları), 6) rezervasyon akışı (oluşturma, güncelleme, onay/ret/iptal, çakışma ve kapasite), 7) rezervasyon hata senaryoları, 8) temizlik (oluşturulan kayıtları siler, böylece koleksiyon tekrar çalıştırılabilir).
+- Her isteğin test betiği durum kodunu ve hata durumlarında `ErrorResponse` alanlarını (`status`, `error`, `message`, `timestamp`) doğrular.
 
 ---
 
